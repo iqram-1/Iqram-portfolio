@@ -1,14 +1,5 @@
 document.querySelector('#year').textContent = new Date().getFullYear();
 
-const defaultSiteCopy = { title: 'Mechanical engineering,\nmade practical.', summary: 'Level 200 BSc Mechanical Engineering student at the University of Energy and Natural Resources, building capability in CAD modelling, mechanical systems, prototyping, and hands-on workshop practice. I turn engineering concepts into clear, workable solutions.' };
-const savedSiteCopy = (() => { try { return JSON.parse(localStorage.getItem('iqram-portfolio-copy-v1')) || defaultSiteCopy; } catch { return defaultSiteCopy; } })();
-const setHeroCopy = (copy) => {
-  const [first, ...rest] = copy.title.split('\n');
-  document.querySelector('.hero h1').innerHTML = `${first}<br><em>${rest.join(' ') || 'made practical.'}</em>`;
-  document.querySelector('.hero-detail p').textContent = copy.summary;
-};
-setHeroCopy(savedSiteCopy);
-
 const menu = document.querySelector('.menu-toggle');
 const navigation = document.querySelector('#site-nav');
 menu.addEventListener('click', () => { const isOpen = navigation.classList.toggle('open'); menu.setAttribute('aria-expanded', String(isOpen)); menu.firstChild.textContent = isOpen ? 'Close ' : 'Menu '; });
@@ -46,16 +37,8 @@ const mediaItems = [
   {number:26, group:'videos', file:'VID-20251027-WA0008.mp4', type:'video', title:'Mechanical workshop practice — October 2025', caption:'Me working as a mechanic at the workshop in October 2025.'}
 ];
 
-const savedArchive = (() => { try { return JSON.parse(localStorage.getItem('iqram-portfolio-archive-v1')) || []; } catch { return []; } })();
-savedArchive.forEach((saved) => {
-  const current = mediaItems.find((item) => String(item.id || item.number) === String(saved.id || saved.number));
-  if (current) Object.assign(current, saved);
-  else if (saved.custom) mediaItems.push(saved);
-});
-const saveArchive = () => localStorage.setItem('iqram-portfolio-archive-v1', JSON.stringify(mediaItems));
-
 const frameFor = (item) => {
-  const source = item.dataUrl || `assets/archive/${encodeURIComponent(item.file)}`;
+  const source = `assets/archive/${encodeURIComponent(item.file)}`;
   const content = item.type === 'video'
     ? `<video controls muted playsinline preload="metadata" aria-label="${item.title}"><source src="${source}">Your browser cannot play this video. <a href="${source}">Open the original video</a>.</video><span class="muted-note">Muted</span>`
     : `<img src="${source}" alt="${item.caption}" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.style.display='grid'"><div class="media-fallback" style="display:none">This original HEIC image is included in the archive.<br><a href="${source}">Open the full image</a></div>`;
@@ -63,7 +46,7 @@ const frameFor = (item) => {
 };
 
 document.querySelector('#media-gallery').innerHTML = groups.map((group) => {
-  const items = mediaItems.filter((item) => item.group === group.id && !item.hidden);
+  const items = mediaItems.filter((item) => item.group === group.id);
   const certificate = group.certificate ? `<aside class="certificate-slot"><span class="media-kind">Reserved space</span><div><h4>Sci-Tech Fair 2024 certificate</h4><p>Certificate scan to be added here when the soft copy is available.</p></div></aside>` : '';
   const clubCertificate = `<aside class="certificate-slot club-certificate"><span class="media-kind">Reserved space</span><div><h4>P.O. Lumumba Innovation Club certificate</h4><p>Active-member certificate to be added here after the scan is available.</p></div></aside>`;
   const cards = items.map((item) => `${frameFor(item)}${group.id === 'journey' && item.number === 8 ? clubCertificate : ''}`).join('');
@@ -77,61 +60,3 @@ document.querySelectorAll('video').forEach((video) => {
 
 const observer = new IntersectionObserver((entries) => { entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }); }, { threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
-
-const studio = document.querySelector('#portfolio-studio');
-const studioToggle = document.querySelector('.studio-toggle');
-const updateVisibleCard = (item) => {
-  const visibleItems = mediaItems.filter((entry) => !entry.hidden);
-  const index = visibleItems.indexOf(item);
-  const card = document.querySelectorAll('#media-gallery .media-card')[index];
-  if (!card) return;
-  card.querySelector('h3').textContent = item.title;
-  card.querySelector('figcaption p').textContent = item.caption;
-  const image = card.querySelector('img');
-  if (image) image.alt = item.caption;
-};
-const renderStudioMedia = () => {
-  const list = document.querySelector('#studio-media-list');
-  const activeItems = mediaItems.filter((item) => !item.hidden);
-  list.innerHTML = activeItems.map((item) => {
-    const source = item.dataUrl || `assets/archive/${encodeURIComponent(item.file)}`;
-    const preview = item.type === 'video' ? `<video class="studio-thumb" muted playsinline src="${source}"></video>` : `<img class="studio-thumb" src="${source}" alt="">`;
-    return `<div class="studio-media-row" data-media-id="${item.id || item.number}">${preview}<div class="studio-row-fields"><input data-field="title" value="${item.title.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" aria-label="Media title"><textarea data-field="caption" rows="2" aria-label="Media caption">${item.caption.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</textarea></div><button type="button" class="studio-delete">Delete</button></div>`;
-  }).join('') || '<p class="studio-empty">Your archive is empty. Add media above to begin.</p>';
-};
-const closeStudio = () => { studio.close(); studioToggle.setAttribute('aria-expanded', 'false'); };
-studioToggle.addEventListener('click', () => {
-  document.querySelector('#site-copy-form [name="heroTitle"]').value = savedSiteCopy.title;
-  document.querySelector('#site-copy-form [name="heroSummary"]').value = savedSiteCopy.summary;
-  document.querySelector('#media-add-form [name="mediaGroup"]').innerHTML = groups.map((group) => `<option value="${group.id}">${group.label}</option>`).join('');
-  renderStudioMedia(); studio.showModal(); studioToggle.setAttribute('aria-expanded', 'true');
-});
-document.querySelector('.studio-close').addEventListener('click', closeStudio);
-studio.addEventListener('click', (event) => { if (event.target === studio) closeStudio(); });
-document.querySelector('#site-copy-form').addEventListener('submit', (event) => {
-  event.preventDefault(); const form = new FormData(event.currentTarget);
-  savedSiteCopy.title = String(form.get('heroTitle')).trim() || defaultSiteCopy.title;
-  savedSiteCopy.summary = String(form.get('heroSummary')).trim() || defaultSiteCopy.summary;
-  localStorage.setItem('iqram-portfolio-copy-v1', JSON.stringify(savedSiteCopy)); setHeroCopy(savedSiteCopy);
-});
-document.querySelector('#studio-media-list').addEventListener('input', (event) => {
-  const field = event.target.dataset.field; if (!field) return;
-  const item = mediaItems.find((entry) => String(entry.id || entry.number) === event.target.closest('.studio-media-row').dataset.mediaId);
-  if (!item) return; item[field] = event.target.value; saveArchive(); updateVisibleCard(item);
-});
-document.querySelector('#studio-media-list').addEventListener('click', (event) => {
-  if (!event.target.classList.contains('studio-delete')) return;
-  const item = mediaItems.find((entry) => String(entry.id || entry.number) === event.target.closest('.studio-media-row').dataset.mediaId);
-  if (!item) return; item.hidden = true; saveArchive(); location.reload();
-});
-document.querySelector('#media-add-form').addEventListener('submit', (event) => {
-  event.preventDefault(); const form = new FormData(event.currentTarget); const file = form.get('mediaFile');
-  if (!(file instanceof File) || !file.size) return;
-  if (file.size > 2200000) { alert('For reliable browser storage, please choose a file smaller than 2 MB. Larger project videos should be added when the site is republished.'); return; }
-  const reader = new FileReader();
-  reader.onload = () => {
-    mediaItems.push({ id: `custom-${Date.now()}`, custom:true, number:Math.max(...mediaItems.map((item) => Number(item.number) || 0)) + 1, group:String(form.get('mediaGroup')), type:file.type.startsWith('video/') ? 'video' : 'image', title:String(form.get('mediaTitle')).trim(), caption:String(form.get('mediaCaption')).trim(), dataUrl:reader.result });
-    saveArchive(); location.reload();
-  };
-  reader.readAsDataURL(file);
-});
