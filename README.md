@@ -1,6 +1,6 @@
 # Iqram Abubakar — Mechanical Engineering Portfolio
 
-This repository is the source for Iqram Abubakar's public portfolio site. GitHub Pages publishes the site automatically whenever an approved editor updates the `master` branch.
+This repository is the source for Iqram Abubakar's public portfolio site. GitHub Pages publishes the site automatically whenever an approved editor updates the `main` branch.
 
 ## Access model
 
@@ -14,7 +14,7 @@ This is deliberately enforced by GitHub authentication and repository permission
 
 1. Open the repository on GitHub while signed in as Iqram.
 2. Open the relevant file and choose the pencil icon to edit it, or ask an approved AI agent to prepare a change.
-3. Commit the change to `master`.
+3. Commit the change to `main`.
 4. The **Deploy portfolio to GitHub Pages** workflow publishes the change automatically.
 
 ## Where content lives
