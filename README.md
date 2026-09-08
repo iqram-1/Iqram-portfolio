@@ -28,3 +28,23 @@ This is deliberately enforced by GitHub authentication and repository permission
 ## Instructions for an AI collaborator
 
 Give an AI agent the repository URL and a precise request, for example: “Update the caption for archive item 13 in `script.js`, preserve the current grouping, then verify the site locally.” Review its proposed change before allowing it write access or merging a pull request.
+
+## Phone-friendly publishing setup
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for the exact Supabase, GitHub Pages, and Netlify steps.
+
+The public portfolio and private editor are now separated in the source tree:
+
+- Public site: the repository root, deployed to the portfolio URL.
+- Admin site: the `admin/` folder, copied to a separate GitHub repository and deployed to its own GitHub Pages URL.
+- Backend: Supabase stores posts, handles sign-in, and stores uploaded images.
+
+### One-time setup
+
+1. Create a Supabase project, disable public email sign-ups, and create an email/password user for the owner account.
+2. Run `supabase-schema.sql` in the Supabase SQL Editor.
+3. Copy the project URL and publishable anon key into both `portfolio-config.js` and `admin/config.js`.
+4. Keep the existing GitHub Pages workflow for the public site. It intentionally excludes `admin/` from the public artifact. Copy `admin/` into a second GitHub repository and use its included Pages workflow for the private admin site.
+5. Configure the admin site's authentication redirect URL in Supabase to its deployed URL.
+
+The public site only requests rows where `published = true`. The admin page requires Supabase authentication before it can read or change posts. Do not put a Supabase service-role key in either config file.

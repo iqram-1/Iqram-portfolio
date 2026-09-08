@@ -1,9 +1,32 @@
-document.querySelector('#year').textContent = new Date().getFullYear();
+const yearElement = document.querySelector('#year');
+if (yearElement) {
+  yearElement.textContent = new Date().getFullYear();
+}
 
 const menu = document.querySelector('.menu-toggle');
 const navigation = document.querySelector('#site-nav');
-menu.addEventListener('click', () => { const isOpen = navigation.classList.toggle('open'); menu.setAttribute('aria-expanded', String(isOpen)); menu.firstChild.textContent = isOpen ? 'Close ' : 'Menu '; });
-navigation.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => { navigation.classList.remove('open'); menu.setAttribute('aria-expanded', 'false'); menu.firstChild.textContent = 'Menu '; }));
+
+if (menu && navigation) {
+  const toggleLabel = menu.querySelector('span');
+
+  menu.addEventListener('click', () => {
+    const isOpen = navigation.classList.toggle('open');
+    menu.setAttribute('aria-expanded', String(isOpen));
+    if (toggleLabel) {
+      toggleLabel.textContent = isOpen ? 'Close' : 'Menu';
+    }
+  });
+
+  navigation.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      navigation.classList.remove('open');
+      menu.setAttribute('aria-expanded', 'false');
+      if (toggleLabel) {
+        toggleLabel.textContent = 'Menu';
+      }
+    });
+  });
+}
 
 const groups = [
   { id:'scitech', label:'Sci-Tech Fair 2024', title:'Osikani Farming Solution & awards', description:'The award-winning prototype, the team, and the Sci-Tech Fair 2024 celebration.', certificate:true },
@@ -45,18 +68,101 @@ const frameFor = (item) => {
   return `<figure class="media-card reveal"><div class="media-frame">${content}<span class="media-kind">${String(item.number).padStart(2, '0')} / ${item.type === 'video' ? 'video' : 'photo'}</span></div><figcaption><h3>${item.title}</h3><p>${item.caption}</p></figcaption></figure>`;
 };
 
-document.querySelector('#media-gallery').innerHTML = groups.map((group) => {
-  const items = mediaItems.filter((item) => item.group === group.id);
-  const certificate = group.certificate ? `<aside class="certificate-slot"><span class="media-kind">Reserved space</span><div><h4>Sci-Tech Fair 2024 certificate</h4><p>Certificate scan to be added here when the soft copy is available.</p></div></aside>` : '';
-  const clubCertificate = `<aside class="certificate-slot club-certificate"><span class="media-kind">Reserved space</span><div><h4>P.O. Lumumba Innovation Club certificate</h4><p>Active-member certificate to be added here after the scan is available.</p></div></aside>`;
-  const cards = items.map((item) => `${frameFor(item)}${group.id === 'journey' && item.number === 8 ? clubCertificate : ''}`).join('');
-  return `<section class="archive-group"><div class="archive-group-heading"><div><p class="eyebrow">${group.label}</p><h3>${group.title}</h3></div><p>${group.description}</p></div><div class="group-gallery">${cards}${certificate}</div></section>`;
-}).join('');
+const mediaGallery = document.querySelector('#media-gallery');
+if (mediaGallery) {
+  mediaGallery.innerHTML = groups.map((group) => {
+    const items = mediaItems.filter((item) => item.group === group.id);
+    const certificate = group.certificate ? `<aside class="certificate-slot"><span class="media-kind">Reserved space</span><div><h4>Sci-Tech Fair 2024 certificate</h4><p>Certificate scan to be added here when the soft copy is available.</p></div></aside>` : '';
+    const clubCertificate = `<aside class="certificate-slot club-certificate"><span class="media-kind">Reserved space</span><div><h4>P.O. Lumumba Innovation Club certificate</h4><p>Active-member certificate to be added here after the scan is available.</p></div></aside>`;
+    const cards = items.map((item) => `${frameFor(item)}${group.id === 'journey' && item.number === 8 ? clubCertificate : ''}`).join('');
+    return `<section class="archive-group"><div class="archive-group-heading"><div><p class="eyebrow">${group.label}</p><h3>${group.title}</h3></div><p>${group.description}</p></div><div class="group-gallery">${cards}${certificate}</div></section>`;
+  }).join('');
+}
 
 document.querySelectorAll('video').forEach((video) => {
   video.muted = true;
   video.addEventListener('volumechange', () => { if (!video.muted) video.muted = true; });
 });
 
-const observer = new IntersectionObserver((entries) => { entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }); }, { threshold: 0.08 });
-document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
+const revealElements = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window && revealElements.length) {
+  const observer = new IntersectionObserver((entries) => { entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }); }, { threshold: 0.08 });
+  revealElements.forEach((element) => observer.observe(element));
+} else {
+  revealElements.forEach((element) => element.classList.add('visible'));
+}
+
+const POSTS_KEY = 'iqram-portfolio-posts';
+
+const getLocalPosts = () => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(POSTS_KEY) || '[]');
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    return [];
+  }
+};
+
+const getPosts = async () => {
+  const config = window.PORTFOLIO_CONFIG || {};
+  if (!config.supabaseUrl || !config.supabaseAnonKey) return getLocalPosts();
+
+  try {
+    const response = await fetch(`${config.supabaseUrl}/rest/v1/posts?select=*&published=eq.true&order=date.desc`, {
+      headers: {
+        apikey: config.supabaseAnonKey,
+        Authorization: `Bearer ${config.supabaseAnonKey}`
+      }
+    });
+    if (!response.ok) throw new Error('Unable to load updates');
+    return await response.json();
+  } catch (error) {
+    return getLocalPosts();
+  }
+};
+
+const renderPosts = async () => {
+  const grid = document.querySelector('#updates-grid');
+  if (!grid) return;
+
+  const posts = await getPosts();
+
+  if (!posts.length) {
+    grid.innerHTML = '<article class="update-card reveal"><div class="update-card-content"><span class="eyebrow">No post yet</span><h3>Start publishing updates</h3><p>Open the admin page to create your first portfolio update.</p></div></article>';
+    return;
+  }
+
+  grid.innerHTML = posts.map((post) => `
+    <article class="update-card reveal">
+      ${post.image_url || post.image ? `<img src="${post.image_url || post.image}" alt="${post.title}" loading="lazy" />` : ''}
+      <div class="update-card-content">
+        <span class="eyebrow">${post.category || 'Update'} · ${post.date || 'Latest'}</span>
+        <h3>${post.title}</h3>
+        <p>${post.caption}</p>
+      </div>
+    </article>
+  `).join('');
+
+  const newRevealItems = grid.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && newRevealItems.length) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    newRevealItems.forEach((element) => observer.observe(element));
+  } else {
+    newRevealItems.forEach((element) => element.classList.add('visible'));
+  }
+};
+
+renderPosts();
+
+const whatsappPath = document.querySelector('.whatsapp-logo path + path');
+if (whatsappPath) {
+  whatsappPath.setAttribute('d', 'M9.1 8.2c.2-.4.4-.4h.4c.2 0 .4.1.5.4l.6 1.4c.1.3.1.5-.1.7l-.5.6c.6 1.1 1.5 1.9 2.6 2.5l.6-.5c.2-.2.4-.2.7-.1l1.4.6c.3.1.4.3.4.5v.4c0 .3 0 .5-.4.7-.4.2-1.3.4-2.4-.1-1.1-.5-2.4-1.5-3.5-2.7-1-1.1-1.9-2.4-2.3-3.5-.4-1.1-.1-2 .1-2.4Z');
+}
