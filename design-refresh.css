@@ -702,16 +702,7 @@ nav a:focus-visible::after {
 }
 
 .media-kind {
-  position: absolute;
-  right: 0.9rem;
-  bottom: 0.9rem;
-  padding: 0.48rem 0.65rem;
-  border-radius: 999px;
-  background: rgba(17, 31, 41, 0.78);
-  color: #f3f0ea;
-  font: 700 0.6rem/1 "IBM Plex Mono", monospace;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  display: none;
 }
 
 .media-card figcaption {
