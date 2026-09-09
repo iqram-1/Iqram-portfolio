@@ -164,5 +164,45 @@ renderPosts();
 
 const whatsappPath = document.querySelector('.whatsapp-logo path + path');
 if (whatsappPath) {
-  whatsappPath.setAttribute('d', 'M9.1 8.2c.2-.4.4-.4h.4c.2 0 .4.1.5.4l.6 1.4c.1.3.1.5-.1.7l-.5.6c.6 1.1 1.5 1.9 2.6 2.5l.6-.5c.2-.2.4-.2.7-.1l1.4.6c.3.1.4.3.4.5v.4c0 .3 0 .5-.4.7-.4.2-1.3.4-2.4-.1-1.1-.5-2.4-1.5-3.5-2.7-1-1.1-1.9-2.4-2.3-3.5-.4-1.1-.1-2 .1-2.4Z');
+  whatsappPath.setAttribute('d', 'M20.52 3.4A10.76 10.76 0 0 0 12.1 1a10.79 10.79 0 0 0-9.38 16.32L1.3 23l5.9-1.55a10.77 10.77 0 0 0 16.1-9.05h-.02ZM12.2 18.9c-1.45 0-2.88-.39-4.13-1.13l-.3-.18-3.5.92.94-3.42-.19-.35A7.74 7.74 0 0 1 12.24 4.3a7.72 7.72 0 0 1 7.7 7.7 7.7 7.7 0 0 1-7.74 7.9Zm4.27-5.77c-.24-.12-1.42-.7-1.64-.78-.21-.08-.36-.12-.52.12-.15.24-.6.78-.74.94-.13.15-.27.17-.5.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.02-.37.1-.49.1-.1.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.52-1.25-.71-1.7-.19-.45-.39-.39-.52-.39h-.45c-.15 0-.4.06-.6.3-.21.24-.8.79-.8 1.93 0 1.14.82 2.24.94 2.39.12.15 1.62 2.47 3.93 3.46.55.24.98.38 1.32.49.55.18 1.05.16 1.45.1.44-.07 1.42-.58 1.62-1.14.2-.56.2-1.05.14-1.14-.06-.09-.22-.15-.46-.28Z');
+}
+
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+if (!prefersReducedMotion.matches && window.matchMedia('(pointer: fine)').matches) {
+  const cursorDot = document.createElement('div');
+  const cursorRing = document.createElement('div');
+  cursorDot.className = 'cursor-dot';
+  cursorRing.className = 'cursor-ring';
+  document.body.appendChild(cursorDot);
+  document.body.appendChild(cursorRing);
+  document.body.classList.add('cursor-enabled');
+
+  const updateCursor = (event) => {
+    cursorDot.style.left = `${event.clientX}px`;
+    cursorDot.style.top = `${event.clientY}px`;
+    cursorRing.style.left = `${event.clientX}px`;
+    cursorRing.style.top = `${event.clientY}px`;
+  };
+
+  document.addEventListener('pointermove', updateCursor);
+
+  document.querySelectorAll('a, button, .project, .contact-card, .round-link').forEach((control) => {
+    control.addEventListener('pointerenter', () => cursorRing.classList.add('active'));
+    control.addEventListener('pointerleave', () => cursorRing.classList.remove('active'));
+  });
+
+  document.querySelectorAll('.project').forEach((projectCard) => {
+    projectCard.addEventListener('pointermove', (event) => {
+      const rect = projectCard.getBoundingClientRect();
+      const offsetX = (event.clientX - rect.left) / rect.width;
+      const offsetY = (event.clientY - rect.top) / rect.height;
+      const rotateY = (offsetX - 0.5) * 10;
+      const rotateX = (0.5 - offsetY) * 10;
+      projectCard.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+    });
+
+    projectCard.addEventListener('pointerleave', () => {
+      projectCard.style.transform = '';
+    });
+  });
 }
