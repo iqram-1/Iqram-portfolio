@@ -10,6 +10,8 @@
   const formMessage = document.querySelector('#form-message');
   const statusMessage = document.querySelector('#status');
   const formHeading = document.querySelector('#form-heading');
+  const publishedInput = document.querySelector('#published');
+  const savePostButton = document.querySelector('#save-post');
   let editingId = null;
   let supabase;
 
@@ -42,7 +44,7 @@
       const posts = await getPosts();
       postList.innerHTML = posts.length ? posts.map((post) => `
         <article class="post">
-          <span class="meta">${escapeHtml(post.category || 'Update')} · ${escapeHtml(post.date || 'Latest')}</span>
+          <span class="meta">${escapeHtml(post.category || 'Update')} · ${escapeHtml(post.date || 'Latest')} · ${post.published ? 'Published' : 'Draft'}</span>
           <h3>${escapeHtml(post.title)}</h3>
           ${post.image_url ? `<img src="${escapeHtml(post.image_url)}" alt="${escapeHtml(post.title)}" style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin:4px 0 10px">` : ''}
           <p>${escapeHtml(post.caption)}</p>
@@ -58,6 +60,8 @@
     postForm.reset();
     editingId = null;
     formHeading.textContent = 'Publish an update';
+    publishedInput.checked = true;
+    savePostButton.textContent = 'Publish update';
     message(formMessage, '');
   };
 
@@ -103,7 +107,8 @@
         title: document.querySelector('#title').value.trim(),
         category: document.querySelector('#category').value,
         date: document.querySelector('#date').value,
-        caption: document.querySelector('#caption').value.trim()
+        caption: document.querySelector('#caption').value.trim(),
+        published: publishedInput.checked
       };
       if (imageUrl) payload.image_url = imageUrl;
       const request = editingId
@@ -122,6 +127,9 @@
 
   document.querySelector('#clear-form').addEventListener('click', resetForm);
   document.querySelector('#sign-out').addEventListener('click', () => supabase.auth.signOut());
+  publishedInput.addEventListener('change', () => {
+    savePostButton.textContent = publishedInput.checked ? 'Publish update' : 'Save draft';
+  });
 
   postList.addEventListener('click', async (event) => {
     const editId = event.target.dataset.edit;
@@ -135,7 +143,9 @@
       document.querySelector('#category').value = post.category || 'Update';
       document.querySelector('#date').value = post.date || '';
       document.querySelector('#caption').value = post.caption || '';
+      publishedInput.checked = post.published !== false;
       formHeading.textContent = 'Edit update';
+      savePostButton.textContent = publishedInput.checked ? 'Update published post' : 'Save draft';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     if (deleteId && window.confirm('Delete this update?')) {
