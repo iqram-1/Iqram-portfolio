@@ -1,4 +1,4 @@
 window.PORTFOLIO_CONFIG = {
-  supabaseUrl: 'https://xqsglasmlyvcxicyithb.supabase.co',
-  supabaseAnonKey: 'sb_publishable_6kxuqdYsM4vV3RJ0BgYHEQ_HC-yBtpO'
+  supabaseUrl: 'https://bvplpqyxlffthbphhdxb.supabase.co',
+  supabaseAnonKey: 'sb_publishable_wxBlaxNO_q5sG9mqHKR9lg_bk2Nq3DP'
 };

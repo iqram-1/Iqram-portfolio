@@ -30,7 +30,8 @@ GitHub Pages provides one Pages site per repository. Therefore, the admin must b
 4. In the new repository, open **Settings > Pages** and select **GitHub Actions** as the source.
 5. Wait for **Deploy portfolio admin** to finish.
 6. In Supabase, open **Authentication > URL Configuration** and add the admin site's full URL as an allowed URL.
-7. Open the admin URL from your phone and sign in with the owner account.
+7. Open the deployed admin URL from your phone and sign in with the owner account:
+   https://iqrion4-dev.github.io/Iqram-portfolio-admin/
 
 The public repository's workflow excludes `admin/`, so the admin files will not be published on the main portfolio site. The admin configuration already links back to the public GitHub Pages URL.
 

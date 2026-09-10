@@ -36,7 +36,7 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for the exact Supabase, GitHub Pages, and Net
 The public portfolio and private editor are now separated in the source tree:
 
 - Public site: the repository root, deployed to the portfolio URL.
-- Admin site: the `admin/` folder, copied to a separate GitHub repository and deployed to its own GitHub Pages URL.
+- Admin site: [Iqram-portfolio-admin](https://iqrion4-dev.github.io/Iqram-portfolio-admin/), deployed separately from the `admin/` folder.
 - Backend: Supabase stores posts, handles sign-in, and stores uploaded images.
 
 ### One-time setup
