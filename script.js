@@ -61,7 +61,7 @@ const mediaItems = [
 ];
 
 const frameFor = (item) => {
-  const source = `assets/archive/${encodeURIComponent(item.file)}`;
+  const source = item.url || `assets/archive/${encodeURIComponent(item.file)}`;
   const content = item.type === 'video'
     ? `<video controls muted playsinline preload="metadata" aria-label="${item.title}"><source src="${source}">Your browser cannot play this video. <a href="${source}">Open the original video</a>.</video><span class="muted-note">Muted</span>`
     : `<img src="${source}" alt="${item.caption}" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.style.display='grid'"><div class="media-fallback" style="display:none">This original HEIC image is included in the archive.<br><a href="${source}">Open the full image</a></div>`;
@@ -69,14 +69,40 @@ const frameFor = (item) => {
 };
 
 const mediaGallery = document.querySelector('#media-gallery');
-if (mediaGallery) {
+const renderMediaGallery = (items) => {
+  if (!mediaGallery) return;
   mediaGallery.innerHTML = groups.map((group) => {
-    const items = mediaItems.filter((item) => item.group === group.id);
+    const groupItems = items.filter((item) => item.group === group.id);
     const certificate = group.certificate ? `<aside class="certificate-slot"><span class="media-kind">Reserved space</span><div><h4>Sci-Tech Fair 2024 certificate</h4><p>Certificate scan to be added here when the soft copy is available.</p></div></aside>` : '';
     const clubCertificate = `<aside class="certificate-slot club-certificate"><span class="media-kind">Reserved space</span><div><h4>P.O. Lumumba Innovation Club certificate</h4><p>Active-member certificate to be added here after the scan is available.</p></div></aside>`;
-    const cards = items.map((item) => `${frameFor(item)}${group.id === 'journey' && item.number === 8 ? clubCertificate : ''}`).join('');
+    const cards = groupItems.map((item) => `${frameFor(item)}${group.id === 'journey' && item.number === 8 ? clubCertificate : ''}`).join('');
     return `<section class="archive-group"><div class="archive-group-heading"><div><p class="eyebrow">${group.label}</p><h3>${group.title}</h3></div><p>${group.description}</p></div><div class="group-gallery">${cards}${certificate}</div></section>`;
   }).join('');
+};
+
+if (mediaGallery) {
+  renderMediaGallery(mediaItems);
+  const publicConfig = window.PORTFOLIO_CONFIG || {};
+  if (publicConfig.supabaseUrl && publicConfig.supabaseAnonKey) {
+    fetch(`${publicConfig.supabaseUrl}/rest/v1/media_assets?select=*&visible=eq.true&order=sort_order.asc,number.asc`, {
+      headers: { apikey: publicConfig.supabaseAnonKey, Authorization: `Bearer ${publicConfig.supabaseAnonKey}` }
+    })
+      .then((response) => response.ok ? response.json() : [])
+      .then((managedMedia) => {
+        if (!managedMedia.length) return;
+        const managedItems = managedMedia.map((item) => ({
+          number: item.number,
+          group: item.group_id,
+          file: item.source_path || '',
+          url: item.media_url || '',
+          type: item.media_type || 'image',
+          title: item.title,
+          caption: item.caption
+        }));
+        renderMediaGallery(managedItems);
+      })
+      .catch(() => {});
+  }
 }
 
 document.querySelectorAll('video').forEach((video) => {

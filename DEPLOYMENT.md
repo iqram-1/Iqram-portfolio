@@ -41,3 +41,7 @@ The public repository's workflow excludes `admin/`, so the admin files will not 
 3. Open the public portfolio in a private browser window.
 4. Confirm the update appears there.
 5. Confirm a visitor can see the public portfolio but cannot access posts through the admin API without signing in.
+
+## 5. Manage the existing media archive
+
+Run the updated `supabase-schema.sql` in the same Supabase project once. It creates and seeds the `media_assets` table from the existing public archive. The admin dashboard then provides an **Archive library** where the owner can edit titles and captions, hide/show items, replace files, and add new media. Public archive visitors can only read visible items.
