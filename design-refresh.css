@@ -382,6 +382,59 @@ nav a:focus-visible::after {
   text-transform: uppercase;
 }
 
+.hero-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.15rem;
+  margin-top: 1.45rem;
+}
+
+.hero-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.9rem 1.15rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #f7f3ee;
+  font: 700 0.68rem/1 "IBM Plex Mono", monospace;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-sm);
+}
+
+.hero-primary span {
+  color: var(--accent);
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.hero-primary:hover,
+.hero-primary:focus-visible {
+  background: var(--secondary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.hero-primary:hover span,
+.hero-primary:focus-visible span {
+  transform: translate(2px, -2px);
+}
+
+.hero-note {
+  color: var(--muted);
+  font: 600 0.62rem/1.5 "IBM Plex Mono", monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero-note b {
+  color: var(--secondary);
+  padding: 0 0.25rem;
+}
+
 .ticker {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -1080,6 +1133,12 @@ nav a:focus-visible::after {
 
   .hero-detail {
     display: block;
+  }
+
+  .hero-actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.9rem;
   }
 
   .round-link {
