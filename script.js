@@ -63,14 +63,22 @@ const mediaItems = [
 const frameFor = (item) => {
   const source = item.url || `assets/archive/${encodeURIComponent(item.file)}`;
   const content = item.type === 'video'
-    ? `<video controls muted playsinline preload="metadata" aria-label="${item.title}"><source src="${source}">Your browser cannot play this video. <a href="${source}">Open the original video</a>.</video><span class="muted-note">Muted</span>`
-    : `<img src="${source}" alt="${item.caption}" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.style.display='grid'"><div class="media-fallback" style="display:none">This original HEIC image is included in the archive.<br><a href="${source}">Open the full image</a></div>`;
-  return `<figure class="media-card reveal"><div class="media-frame">${content}<span class="media-kind">${String(item.number).padStart(2, '0')} / ${item.type === 'video' ? 'video' : 'photo'}</span></div><figcaption><h3>${item.title}</h3><p>${item.caption}</p></figcaption></figure>`;
+    ? `<video controls muted playsinline preload="none" aria-label="${item.title}" onerror="this.style.display='none'; this.parentElement.querySelector('.media-fallback').style.display='grid';"><source src="${source}">Your browser cannot play this video. <a href="${source}">Open the original video</a>.</video><span class="muted-note">Muted</span>`
+    : `<img src="${source}" alt="${item.caption}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"><div class="media-fallback" style="display:none">This original media item is unavailable in the archive right now.<br><a href="${source}">Open the full image</a></div>`;
+  return `<figure class="media-card"><div class="media-frame">${content}<span class="media-kind">${String(item.number).padStart(2, '0')} / ${item.type === 'video' ? 'video' : 'photo'}</span></div><figcaption><h3>${item.title}</h3><p>${item.caption}</p></figcaption></figure>`;
 };
 
 const mediaGallery = document.querySelector('#media-gallery');
+const archiveSummary = document.querySelector('#archive-summary');
+const updateArchiveSummary = (items) => {
+  if (!archiveSummary) return;
+  const photoCount = items.filter((item) => item.type !== 'video').length;
+  const videoCount = items.filter((item) => item.type === 'video').length;
+  archiveSummary.innerHTML = `<span>${photoCount} ${photoCount === 1 ? 'photograph' : 'photographs'}</span><span>${videoCount} muted ${videoCount === 1 ? 'video' : 'videos'}</span><span>Arranged by story</span>`;
+};
 const renderMediaGallery = (items) => {
   if (!mediaGallery) return;
+  updateArchiveSummary(items);
   mediaGallery.innerHTML = groups.map((group) => {
     const groupItems = items.filter((item) => item.group === group.id);
     const certificate = group.certificate ? `<aside class="certificate-slot"><span class="media-kind">Reserved space</span><div><h4>Sci-Tech Fair 2024 certificate</h4><p>Certificate scan to be added here when the soft copy is available.</p></div></aside>` : '';
@@ -101,7 +109,9 @@ if (mediaGallery) {
         }));
         renderMediaGallery(managedItems);
       })
-      .catch(() => {});
+      .catch((error) => {
+        console.warn('The managed archive could not be loaded; showing the local archive instead.', error);
+      });
   }
 }
 
@@ -143,6 +153,7 @@ const getPosts = async () => {
     if (!response.ok) throw new Error('Unable to load updates');
     return await response.json();
   } catch (error) {
+    console.warn('The latest updates could not be loaded; showing local updates instead.', error);
     return getLocalPosts();
   }
 };
@@ -160,7 +171,12 @@ const renderPosts = async () => {
 
   grid.innerHTML = posts.map((post) => `
     <article class="update-card reveal">
-      ${post.image_url || post.image ? `<img src="${post.image_url || post.image}" alt="${post.title}" loading="lazy" />` : ''}
+      ${post.image_url || post.image ? `
+        <div class="update-card-media">
+          <img src="${post.image_url || post.image}" alt="${post.title}" loading="lazy" onerror="this.style.display='none'; this.parentElement.querySelector('.update-card-fallback').style.display='grid';" />
+          <div class="update-card-fallback" style="display:none">Media unavailable<br><span>Update image missing</span></div>
+        </div>
+      ` : ''}
       <div class="update-card-content">
         <span class="eyebrow">${post.category || 'Update'} · ${post.date || 'Latest'}</span>
         <h3>${post.title}</h3>
