@@ -29,6 +29,7 @@ jobs:
         run: |
           mkdir _site
           rsync -av --exclude='admin' --exclude='supabase-schema.sql' --exclude='README.md' --exclude='.git' --exclude='.github' ./ _site/
+          printf '%s\n' "${{ github.sha }}" > _site/.portfolio-build
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
