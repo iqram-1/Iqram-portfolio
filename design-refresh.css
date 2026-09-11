@@ -1132,6 +1132,19 @@ nav a:focus-visible::after { transform: scaleX(1); }
   /* The hero uses the portrait as part of the page's composition, not as a card. */
   .reference-page .reference-hero {
     overflow: hidden;
+    position: relative;
+  }
+
+  .reference-page .reference-hero::after {
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 4.5rem;
+    background: var(--ref-paper);
+    clip-path: polygon(62% 100%, 100% 0, 100% 100%);
+    content: "";
+    pointer-events: none;
   }
 
   .reference-page .reference-hero-grid {
@@ -1191,6 +1204,28 @@ nav a:focus-visible::after { transform: scaleX(1); }
     letter-spacing: .14em;
   }
 
+  .reference-page .reference-hero-scroll {
+    display: inline-flex;
+    align-items: center;
+    gap: .65rem;
+    margin-top: 2.2rem;
+    color: var(--ref-body-dark);
+    font-size: .62rem;
+    letter-spacing: .13em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .reference-page .reference-hero-scroll b {
+    color: var(--ref-blue);
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .reference-page .reference-hero-scroll:hover {
+    color: var(--ref-white);
+  }
+
   .reference-page .reference-hero-copy > * {
     opacity: 0;
     animation: reference-hero-rise 600ms cubic-bezier(.2, .75, .25, 1) forwards;
@@ -1201,6 +1236,7 @@ nav a:focus-visible::after { transform: scaleX(1); }
   .reference-page .reference-hero-copy > :nth-child(3) { animation-delay: 280ms; }
   .reference-page .reference-hero-copy > :nth-child(4) { animation-delay: 360ms; }
   .reference-page .reference-hero-copy > :nth-child(5) { animation-delay: 440ms; }
+  .reference-page .reference-hero-copy > :nth-child(6) { animation-delay: 500ms; }
   .reference-page .reference-hero-media > img {
     opacity: 0;
     animation: reference-hero-image 700ms 380ms cubic-bezier(.2, .75, .25, 1) forwards;
@@ -1232,6 +1268,11 @@ nav a:focus-visible::after { transform: scaleX(1); }
   @media (max-width: 600px) {
     .reference-page .reference-hero {
       padding-top: 3.5rem;
+    }
+
+    .reference-page .reference-hero::after {
+      height: 2.5rem;
+      clip-path: polygon(35% 100%, 100% 0, 100% 100%);
     }
 
     .reference-page .reference-hero-grid {
