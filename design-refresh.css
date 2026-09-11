@@ -1011,6 +1011,111 @@ nav a:focus-visible::after { transform: scaleX(1); }
     .reference-project-card p:not(.reference-card-index) { min-height: 0; }
     .reference-contact footer { display: grid; margin-top: 4rem; }
   }
+
+  /* Anti-AI refinement: reduce decoration and let the work, type, and contact details lead. */
+  .reference-page {
+    --ref-blue: #5275a6;
+    --ref-blue-hover: #6b8dbd;
+    --ref-paper: #f5f3ef;
+    --ref-heading: #20252a;
+    --ref-body: #596168;
+  }
+
+  .reference-page .reference-hero {
+    background: #171b20;
+  }
+
+  .reference-page .reference-hero h1 span,
+  .reference-page .reference-dark h2 span {
+    color: inherit;
+  }
+
+  .reference-page .reference-hero-media > img,
+  .reference-page .reference-about-image img,
+  .reference-page .reference-contact-image img {
+    border-radius: 2px;
+  }
+
+  .reference-page .reference-process-panel,
+  .reference-page .reference-media-caption {
+    display: none;
+  }
+
+  .reference-page .reference-button,
+  .reference-page .header-cta,
+  .reference-page .reference-project-card,
+  .reference-page .reference-skill-grid article {
+    border-radius: 3px;
+  }
+
+  .reference-page .reference-project-card {
+    box-shadow: none;
+  }
+
+  .reference-page .reference-project-card:hover img {
+    transform: none;
+  }
+
+  .reference-page .reference-tags span {
+    border-radius: 2px;
+  }
+
+  .reference-page .reference-contact {
+    background: #171b20;
+  }
+
+  .reference-contact-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid rgba(199, 208, 218, .25);
+  }
+
+  .reference-contact-list a {
+    display: grid;
+    gap: .25rem;
+    padding: 1rem .8rem 1rem 0;
+    border-bottom: 1px solid rgba(199, 208, 218, .25);
+    color: var(--ref-white);
+    text-decoration: none;
+  }
+
+  .reference-contact-list a:nth-child(even) {
+    padding-left: .8rem;
+    border-left: 1px solid rgba(199, 208, 218, .25);
+  }
+
+  .reference-contact-list span {
+    color: var(--ref-muted-dark);
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .reference-contact-list strong {
+    font-size: .92rem;
+    font-weight: 600;
+  }
+
+  .reference-contact-list small {
+    color: var(--ref-body-dark);
+    font-size: .72rem;
+  }
+
+  .reference-contact-list a:hover strong {
+    color: var(--ref-blue-hover);
+  }
+
+  @media (max-width: 600px) {
+    .reference-contact-list {
+      grid-template-columns: 1fr;
+    }
+
+    .reference-contact-list a:nth-child(even) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
 .about {
   margin-top: clamp(3rem, 7vw, 7rem);
   padding-top: clamp(3.5rem, 8vw, 6rem);
