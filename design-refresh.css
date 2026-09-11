@@ -1030,6 +1030,11 @@ nav a:focus-visible::after { transform: scaleX(1); }
     color: inherit;
   }
 
+  .reference-page .reference-section-heading h2 em,
+  .reference-page .reference-about h2 em {
+    color: inherit;
+  }
+
   .reference-page .reference-hero-media > img,
   .reference-page .reference-about-image img,
   .reference-page .reference-contact-image img {
@@ -1053,6 +1058,15 @@ nav a:focus-visible::after { transform: scaleX(1); }
   }
 
   .reference-page .reference-project-card:hover img {
+    transform: none;
+  }
+
+  .reference-page .reference-updates .update-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .reference-page .reference-button-primary:hover {
     transform: none;
   }
 
@@ -1104,6 +1118,15 @@ nav a:focus-visible::after { transform: scaleX(1); }
 
   .reference-contact-list a:hover strong {
     color: var(--ref-blue-hover);
+  }
+
+  .reference-page .reference-capabilities b {
+    border-radius: 2px;
+    background: transparent;
+    border: 1px solid rgba(199, 208, 218, .3);
+    color: var(--ref-body-dark);
+    font-size: .62rem;
+    letter-spacing: .05em;
   }
 
   @media (max-width: 600px) {
