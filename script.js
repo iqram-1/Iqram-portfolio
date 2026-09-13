@@ -116,11 +116,10 @@ if (mediaGallery) {
       headers: { apikey: publicConfig.supabaseAnonKey, Authorization: `Bearer ${publicConfig.supabaseAnonKey}` }
     })
       .then((response) => response.ok ? response.json() : [])
-      .then(async (managedMedia) => {
+      .then((managedMedia) => {
         if (!managedMedia.length) return;
-        const managedItems = [];
-        for (const item of managedMedia) {
-          const candidate = {
+        const managedItems = managedMedia
+          .map((item) => ({
             number: item.number,
             group: item.group_id,
             file: item.source_path || '',
@@ -128,12 +127,9 @@ if (mediaGallery) {
             type: item.media_type || 'image',
             title: item.title,
             caption: item.caption
-          };
-          const source = resolveMediaUrl(candidate);
-          if (!source) continue;
-          const isUsable = await imageExists(source);
-          if (isUsable) managedItems.push(candidate);
-        }
+          }))
+          .filter((item) => item.url && /^https?:\/\//.test(item.url));
+
         if (managedItems.length) renderMediaGallery(managedItems);
       })
       .catch((error) => {
