@@ -81,6 +81,21 @@ const updateArchiveSummary = (items) => {
   const videoCount = items.filter((item) => item.type === 'video').length;
   archiveSummary.innerHTML = `<span>${photoCount} ${photoCount === 1 ? 'photograph' : 'photographs'}</span><span>${videoCount} muted ${videoCount === 1 ? 'video' : 'videos'}</span><span>Arranged by story</span>`;
 };
+
+const resolveMediaUrl = (item) => {
+  if (item.url) return item.url;
+  if (!item.file) return '';
+  return `assets/archive/${encodeURIComponent(item.file)}`;
+};
+
+const imageExists = (source) => new Promise((resolve) => {
+  if (!source) return resolve(false);
+  const image = new Image();
+  image.onload = () => resolve(true);
+  image.onerror = () => resolve(false);
+  image.src = source;
+});
+
 const renderMediaGallery = (items) => {
   if (!mediaGallery) return;
   updateArchiveSummary(items);
@@ -101,18 +116,25 @@ if (mediaGallery) {
       headers: { apikey: publicConfig.supabaseAnonKey, Authorization: `Bearer ${publicConfig.supabaseAnonKey}` }
     })
       .then((response) => response.ok ? response.json() : [])
-      .then((managedMedia) => {
+      .then(async (managedMedia) => {
         if (!managedMedia.length) return;
-        const managedItems = managedMedia.map((item) => ({
-          number: item.number,
-          group: item.group_id,
-          file: item.source_path || '',
-          url: item.media_url || '',
-          type: item.media_type || 'image',
-          title: item.title,
-          caption: item.caption
-        }));
-        renderMediaGallery(managedItems);
+        const managedItems = [];
+        for (const item of managedMedia) {
+          const candidate = {
+            number: item.number,
+            group: item.group_id,
+            file: item.source_path || '',
+            url: item.media_url || '',
+            type: item.media_type || 'image',
+            title: item.title,
+            caption: item.caption
+          };
+          const source = resolveMediaUrl(candidate);
+          if (!source) continue;
+          const isUsable = await imageExists(source);
+          if (isUsable) managedItems.push(candidate);
+        }
+        if (managedItems.length) renderMediaGallery(managedItems);
       })
       .catch((error) => {
         console.warn('The managed archive could not be loaded; showing the local archive instead.', error);
