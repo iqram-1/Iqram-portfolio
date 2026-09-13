@@ -29,6 +29,7 @@ if (menu && navigation) {
 }
 
 const groups = [
+  { id:'portfolio', label:'Portfolio highlights', title:'Main projects and engineering story', description:'The complete project set represented in the portfolio—from concept design and CAD work to practical systems and testing.', certificate:false },
   { id:'scitech', label:'Sci-Tech Fair 2024', title:'Osikani Farming Solution & awards', description:'The award-winning prototype, the team, and the Sci-Tech Fair 2024 celebration.', certificate:true },
   { id:'hub', label:'Smart Power Hub', title:'Concept to working prototype', description:'A CAD-led, ESP32-enabled extension-board project developed from my original proposal with my group.' },
   { id:'cad', label:'CAD & mechanical models', title:'Designed to come together', description:'Fusion 360 studies of parts, assemblies, and mechanical connections.' },
@@ -39,8 +40,12 @@ const groups = [
 ];
 
 const mediaItems = [
-  {number:1, group:'scitech', file:'072f9fb8b9e417535567a771e48e0c5f.webp', type:'image', title:'Osikani Farming Solution prototype', caption:'The Osikani Farming Solution — the prototype we built to win at the Sci-Tech Fair 2024.'},
-  {number:2, group:'scitech', file:'311176_5997d21fe57349bd8c340db373ae2f78~mv2.jpeg', type:'image', title:'Sci-Tech Fair 2024 award win', caption:'Sci-Tech Fair 2024 award photographs: our team celebrating the awards we won.'},
+  {number:1, group:'portfolio', file:'smart-hub.jpg', type:'image', title:'Smart Power Hub', caption:'A practical concept for a safer, smarter extension board with control, scheduling, and protection logic.', url:'assets/smart-hub.jpg'},
+  {number:2, group:'portfolio', file:'robotics.jpg', type:'image', title:'Robotics Prototype', caption:'A movement-focused prototype built to test behaviour, refine the mechanism, and learn through physical iteration.', url:'assets/robotics.jpg'},
+  {number:3, group:'portfolio', file:'mechanical-assembly.png', type:'image', title:'Mechanical Assembly', caption:'A component and assembly study organised around fit, alignment, motion, and how parts work together as a whole.', url:'assets/mechanical-assembly.png'},
+  {number:4, group:'portfolio', file:'circuit.jpg', type:'image', title:'Combined Circuit Study', caption:'A final-semester group circuit build that connected multiple stages into one coherent electrical system.', url:'assets/circuit.jpg'},
+  {number:5, group:'scitech', file:'072f9fb8b9e417535567a771e48e0c5f.webp', type:'image', title:'Osikani Farming Solution prototype', caption:'The Osikani Farming Solution — the prototype we built to win at the Sci-Tech Fair 2024.'},
+  {number:6, group:'scitech', file:'311176_5997d21fe57349bd8c340db373ae2f78~mv2.jpeg', type:'image', title:'Sci-Tech Fair 2024 award win', caption:'Sci-Tech Fair 2024 award photographs: our team celebrating the awards we won.'},
   {number:17, group:'scitech', file:'IMG-20250930-WA0003.jpg', type:'image', title:'Sci-Tech Fair award day', caption:'A moment from the Sci-Tech Fair 2024 award day with fellow student innovators.'},
   {number:18, group:'scitech', file:'IMG-20250930-WA0004.jpg', type:'image', title:'Sci-Tech Fair recognition', caption:'The award-winning team with mentors and organisers at the Sci-Tech Fair 2024.'},
   {number:3, group:'hub', file:'63093f77-c0f2-4322-8a69-64416ff795e3.jpg', type:'image', title:'Smart Power Hub prototype', caption:'A working ESP32 smart extension-board prototype with safety sensing, Wi-Fi control, scheduling, and power monitoring.'},
